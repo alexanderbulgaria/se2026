@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="card">
+    <h1 style="margin-top: 0;">Вход</h1>
+
+    {% if error %}
+      <div class="error">
+        Грешни данни за вход.
+      </div>
+    {% endif %}
+
+    <form method="post">
+      <div class="row">
+        <label for="inputEmail">Електронна поща</label>
+        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" autocomplete="email" required autofocus>
+      </div>
+
+      <div class="row">
+        <label for="inputPassword">Парола</label>
+        <input type="password" name="password" id="inputPassword" autocomplete="current-password" required>
+      </div>
+
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+      <button type="submit">Вход</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

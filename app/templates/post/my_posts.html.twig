@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Моите публикации{% endblock %}
+
+{% block body %}
+<div style="max-width: 900px; margin: 24px auto; padding: 0 16px;">
+  <h1>Моите публикации</h1>
+
+  <p>Скелет страница. Следващата стъпка ще е Entity Post + връзка към текущия потребител.</p>
+
+  <p style="margin-top: 16px;">
+    <a href="{{ path('app_profile') }}">← Обратно към профила</a>
+  </p>
+</div>
+{% endblock %}

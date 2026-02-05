@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Профил{% endblock %}
+
+{% block body %}
+<div style="max-width: 900px; margin: 24px auto; padding: 0 16px;">
+  <h1>Профил</h1>
+
+  <p>
+    Влязъл си като:
+    <strong>{{ app.user.userIdentifier }}</strong>
+  </p>
+
+  <p>
+    Роли:
+    <code>{{ app.user.roles|json_encode }}</code>
+  </p>
+
+  <p style="margin-top: 16px;">
+    <a href="{{ path('app_my_posts') }}">Моите публикации</a>
+  </p>
+</div>
+{% endblock %}
