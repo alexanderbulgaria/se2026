@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Възникна грешка{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="card">
+    <h1 style="margin-top: 0;">Възникна грешка</h1>
+
+    <p>Заявката не може да бъде обработена в момента.</p>
+
+    <p style="margin-top: 16px;">
+      <a href="{{ path('app_home') }}">Към началото</a>
+      {% if app.user %}
+        | <a href="{{ path('app_profile') }}">Към профила</a>
+      {% else %}
+        | <a href="{{ path('app_login') }}">Вход</a>
+      {% endif %}
+    </p>
+  </div>
+</div>
+{% endblock %}
