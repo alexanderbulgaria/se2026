@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Страницата не е намерена{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="card">
+    <h1 style="margin-top: 0;">Страницата не е намерена (404)</h1>
+
+    <p>Възможно е адресът да е грешен или страницата да е премахната.</p>
+
+    <p style="margin-top: 16px;">
+      <a href="{{ path('app_home') }}">Към началото</a>
+      {% if app.user %}
+        | <a href="{{ path('app_profile') }}">Към профила</a>
+      {% else %}
+        | <a href="{{ path('app_login') }}">Вход</a>
+      {% endif %}
+    </p>
+  </div>
+</div>
+{% endblock %}
