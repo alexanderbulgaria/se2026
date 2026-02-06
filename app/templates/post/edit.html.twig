@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Post{% endblock %}
+{% block title %}Редакция на публикация{% endblock %}
 
 {% block body %}
-    <h1>Edit Post</h1>
+    <h1>Редакция на публикация</h1>
 
-    {{ include('post/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('post/_form.html.twig', {'button_label': 'Запазване на промените'}) }}
 
-    <a href="{{ path('app_post_index') }}">back to list</a>
+    <a href="{{ path('app_my_posts') }}">Назад към моите публикации</a>
 
     {{ include('post/_delete_form.html.twig') }}
 {% endblock %}
