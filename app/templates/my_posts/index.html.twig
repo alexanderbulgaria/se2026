@@ -1,0 +1,87 @@
+{# templates/my_posts/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Моите публикации{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Моите публикации</h1>
+
+        {% if is_granted('ROLE_USER') %}
+            <a class="btn btn-primary" href="{{ path('app_post_new') }}">Нова публикация</a>
+        {% endif %}
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    {% if posts is empty %}
+        <div class="alert alert-info">
+            Все още нямате публикации.
+            <a href="{{ path('app_post_new') }}">Създайте първата си публикация</a>.
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Заглавие</th>
+                        <th class="text-nowrap">Създадена</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for post in posts %}
+                    <tr>
+                        <td>
+                            <a href="{{ path('app_post_show', {'id': post.id}) }}" class="text-decoration-none">
+                                {{ post.title }}
+                            </a>
+                            {% if post.content %}
+                                <div class="text-muted small mt-1">
+                                    {{ post.content|striptags|u.truncate(120, '…', false) }}
+                                </div>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-nowrap">
+                            {% if post.createdAt %}
+                                {{ post.createdAt|date('d.m.Y H:i') }}
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end text-nowrap">
+                            {# В MyPosts се очаква това да е вярно, но пак е хубаво да е защитено #}
+                            {% if is_granted('POST_EDIT', post) %}
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   href="{{ path('app_post_edit', {'id': post.id}) }}">
+                                    Редакция
+                                </a>
+
+                                <form method="post"
+                                      action="{{ path('app_post_delete', {'id': post.id}) }}"
+                                      style="display:inline-block"
+                                      onsubmit="return confirm('Сигурни ли сте, че искате да изтриете публикацията?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                                    <button class="btn btn-sm btn-outline-danger">Изтриване</button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted small">Няма права</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
