@@ -3,16 +3,16 @@
 {% block title %}Post index{% endblock %}
 
 {% block body %}
-    <h1>Post index</h1>
+    <h1>Списък с публикации</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Content</th>
-                <th>CreatedAt</th>
-                <th>actions</th>
+				<th>ID</th>
+				<th>Заглавие</th>
+				<th>Съдържание</th>
+				<th>Създадена на</th>
+				<th>Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -21,10 +21,10 @@
                 <td>{{ post.id }}</td>
                 <td>{{ post.title }}</td>
                 <td>{{ post.content }}</td>
-                <td>{{ post.createdAt }}</td>
+                <td>{{ post.createdAt|date('d.m.Y H:i') }}</td>
                 <td>
-                    <a href="{{ path('app_post_show', {'id': post.id}) }}">show</a>
-                    <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
+                    <a href="{{ path('app_post_show', {'id': post.id}) }}">преглед</a>
+                    <a href="{{ path('app_post_edit', {'id': post.id}) }}">редакция</a>
                 </td>
             </tr>
         {% else %}
@@ -35,5 +35,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_post_new') }}">Create new</a>
+    <a href="{{ path('app_post_new') }}">Нова публикация</a>
 {% endblock %}
