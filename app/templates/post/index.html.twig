@@ -24,7 +24,9 @@
                 <td>{{ post.createdAt|date('d.m.Y H:i') }}</td>
                 <td>
                     <a href="{{ path('app_post_show', {'id': post.id}) }}">преглед</a>
-                    <a href="{{ path('app_post_edit', {'id': post.id}) }}">редакция</a>
+					{% if is_granted('POST_EDIT', post) %}
+						<a href="{{ path('app_post_edit', {'id': post.id}) }}">редакция</a>
+					{% endif %}
                 </td>
             </tr>
         {% else %}
