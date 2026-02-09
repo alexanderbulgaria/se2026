@@ -1,4 +1,26 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Запазване') }}</button>
+
+    {{ form_errors(form) }}
+
+    <div class="row">
+        {{ form_label(form.title) }}
+        {{ form_widget(form.title) }}
+        {{ form_errors(form.title) }}
+    </div>
+
+    <div class="row">
+        {{ form_label(form.content) }}
+        {{ form_widget(form.content) }}
+        {{ form_errors(form.content) }}
+    </div>
+
+    <div class="row">
+        {{ form_label(form.coAuthors) }}
+        {{ form_widget(form.coAuthors) }}
+        {{ form_errors(form.coAuthors) }}
+        <small>За избор на повече от един съавтор задръж <strong>Ctrl</strong> (или <strong>Cmd</strong> на Mac) и щракни върху имената.</small>
+    </div>
+
+    <button type="submit">{{ button_label|default('Запазване') }}</button>
+
 {{ form_end(form) }}

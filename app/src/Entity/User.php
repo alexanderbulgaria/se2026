@@ -32,9 +32,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Post::class)]
     private Collection $posts;
 
+    #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'coAuthors')]
+    private Collection $coauthoredPosts;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
+        $this->coauthoredPosts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -70,7 +74,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
+        // гарантираме, че всеки има поне ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -88,7 +92,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getPassword(): string
     {
-        return $this->password;
+        return (string) $this->password;
     }
 
     public function setPassword(string $password): static
@@ -103,7 +107,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
+        // Ако съхраняваш временни чувствителни данни, изчисти ги тук
         // $this->plainPassword = null;
     }
 
@@ -127,10 +131,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removePost(Post $post): static
     {
-        if ($this->posts->removeElement($post)) {
-            // set the owning side to null (unless already changed)
-            if ($post->getAuthor() === $this) {
-                $post->setAuthor(null);
+        // Забележка: Post::author е owning side и е NOT NULL.
+        // Премахване от тази колекция само по себе си НЕ премахва връзката в базата.
+        // За реално „махане“ трябва да изтриеш Post или да смениш автора.
+        $this->posts->removeElement($post);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Post>
+     */
+    public function getCoauthoredPosts(): Collection
+    {
+        return $this->coauthoredPosts;
+    }
+
+    public function addCoauthoredPost(Post $post): static
+    {
+        if (!$this->coauthoredPosts->contains($post)) {
+            $this->coauthoredPosts->add($post);
+
+            // За да е синхронизирано двупосочно, Post трябва да има addCoAuthor().
+            if (method_exists($post, 'addCoAuthor')) {
+                $post->addCoAuthor($this);
+            }
+        }
+
+        return $this;
+    }
+
+    public function removeCoauthoredPost(Post $post): static
+    {
+        if ($this->coauthoredPosts->removeElement($post)) {
+            // За да е синхронизирано двупосочно, Post трябва да има removeCoAuthor().
+            if (method_exists($post, 'removeCoAuthor')) {
+                $post->removeCoAuthor($this);
             }
         }
 

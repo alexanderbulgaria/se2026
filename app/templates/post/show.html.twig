@@ -1,34 +1,65 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Post{% endblock %}
+{% block title %}Публикация{% endblock %}
 
 {% block body %}
-    <h1>Post</h1>
+    <div class="container">
+        <h1>Публикация</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ post.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ post.title }}</td>
-            </tr>
-            <tr>
-                <th>Content</th>
-                <td>{{ post.content }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ post.createdAt }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Заглавие</th>
+                    <td>{{ post.title }}</td>
+                </tr>
 
-    <a href="{{ path('app_post_index') }}">back to list</a>
+                <tr>
+                    <th>Съдържание</th>
+                    <td>{{ post.content|e|nl2br }}</td>
+                </tr>
 
-    <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
+                <tr>
+                    <th>Автор</th>
+                    <td>{{ post.author.email }}</td>
+                </tr>
 
-    {{ include('post/_delete_form.html.twig') }}
+                <tr>
+                    <th>Съавтори</th>
+                    <td>
+                        {% if post.coAuthors is defined and post.coAuthors|length > 0 %}
+                            {% for u in post.coAuthors %}
+                                {{ u.email }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Създадена</th>
+                    <td>{{ post.createdAt ? post.createdAt|date('d.m.Y H:i') : '—' }}</td>
+                </tr>
+
+                <tr>
+                    <th>Обновена</th>
+                    <td>{{ post.updatedAt ? post.updatedAt|date('d.m.Y H:i') : '—' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 16px;">
+            <a href="{{ path('app_my_posts') }}">Назад</a>
+
+            {% if is_granted('POST_EDIT', post) %}
+                <span style="margin: 0 10px;">|</span>
+                <a href="{{ path('app_post_edit', {'id': post.id}) }}">Редакция</a>
+            {% endif %}
+
+            {% if is_granted('POST_DELETE', post) %}
+                <span style="margin: 0 10px;">|</span>
+                {{ include('post/_delete_form.html.twig') }}
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html>
     <head>
-		<style>
-		  body { font-family: Arial, sans-serif; margin: 0; }
-		  nav { padding: 12px 16px; border-bottom: 1px solid #ddd; }
-		  nav a { text-decoration: none; margin-right: 10px; }
-		  .container { max-width: 520px; margin: 28px auto; padding: 0 16px; }
-		  .card { border: 1px solid #ddd; border-radius: 10px; padding: 18px; }
-		  .row { margin-bottom: 12px; }
-		  label { display: block; margin-bottom: 6px; }
-		  input { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 8px; }
-		  button { padding: 10px 14px; border: 1px solid #444; border-radius: 8px; background: #fff; cursor: pointer; }
-		  .error { background: #ffe6e6; border: 1px solid #ffb3b3; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
-		</style>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; }
+          nav { padding: 12px 16px; border-bottom: 1px solid #ddd; }
+          nav a { text-decoration: none; margin-right: 10px; }
+          .container { max-width: 520px; margin: 28px auto; padding: 0 16px; }
+          .card { border: 1px solid #ddd; border-radius: 10px; padding: 18px; }
+          .row { margin-bottom: 12px; }
+          label { display: block; margin-bottom: 6px; }
+          input { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 8px; }
+          button { padding: 10px 14px; border: 1px solid #444; border-radius: 8px; background: #fff; cursor: pointer; }
+          .error { background: #ffe6e6; border: 1px solid #ffb3b3; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+
+          /* Flash messages */
+          .flash-wrap { max-width: 520px; margin: 16px auto 0; padding: 0 16px; }
+          .flash { padding: 10px 12px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 10px; }
+          .flash-success { background: #e9f8ee; border-color: #bfe7cb; }
+          .flash-error   { background: #ffe6e6; border-color: #ffb3b3; }
+          .flash-warning { background: #fff4e5; border-color: #ffd6a1; }
+          .flash-info    { background: #e8f3ff; border-color: #b7d8ff; }
+        </style>
 
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
@@ -27,25 +35,36 @@
         {% endblock %}
     </head>
     <body>
-		<nav style="padding: 12px 16px; border-bottom: 1px solid #ddd;">
-		  <a href="{{ path('app_home') }}">Начало</a>
+        <nav style="padding: 12px 16px; border-bottom: 1px solid #ddd;">
+          <a href="{{ path('app_home') }}">Начало</a>
 
-		  {% if app.user %}
-			<span style="margin: 0 10px;">|</span>
-			<a href="{{ path('app_profile') }}">Профил</a>
-			<span style="margin: 0 10px;">|</span>
-			<a href="{{ path('app_my_posts') }}">Моите публикации</a>
-			<span style="margin: 0 10px;">|</span>
-			<a href="{{ path('app_logout') }}">Изход</a>
+          {% if app.user %}
+            <span style="margin: 0 10px;">|</span>
+            <a href="{{ path('app_profile') }}">Профил</a>
+            <span style="margin: 0 10px;">|</span>
+            <a href="{{ path('app_my_posts') }}">Моите публикации</a>
+            <span style="margin: 0 10px;">|</span>
+            <a href="{{ path('app_logout') }}">Изход</a>
 
-			<span style="float: right;">
-			  Влязъл: <strong>{{ app.user.userIdentifier }}</strong>
-			</span>
-		  {% else %}
-			<span style="margin: 0 10px;">|</span>
-			<a href="{{ path('app_login') }}">Вход</a>
-		  {% endif %}
-		</nav>
+            <span style="float: right;">
+              Влязъл: <strong>{{ app.user.userIdentifier }}</strong>
+            </span>
+          {% else %}
+            <span style="margin: 0 10px;">|</span>
+            <a href="{{ path('app_login') }}">Вход</a>
+          {% endif %}
+        </nav>
+
+        {# Flash съобщенията ПРЕДИ body блока #}
+        {% if app.flashes is not empty %}
+          <div class="flash-wrap">
+            {% for label, messages in app.flashes %}
+              {% for message in messages %}
+                <div class="flash flash-{{ label }}">{{ message }}</div>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        {% endif %}
 
         {% block body %}{% endblock %}
     </body>
