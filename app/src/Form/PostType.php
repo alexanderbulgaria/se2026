@@ -26,9 +26,11 @@ class PostType extends AbstractType
                 'class' => User::class,
                 'choice_label' => 'email',
                 'multiple' => true,
+                'expanded' => true,        
                 'required' => false,
-                'by_reference' => false,
+                'by_reference' => false,   
                 'label' => 'Съавтори',
+                'disabled' => !$options['can_manage_coauthors'], 
             ]);
     }
 
@@ -36,6 +38,9 @@ class PostType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Post::class,
+            'can_manage_coauthors' => true,
         ]);
+
+        $resolver->setAllowedTypes('can_manage_coauthors', 'bool');
     }
 }

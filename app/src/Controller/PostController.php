@@ -26,14 +26,8 @@ class PostController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        // Показваме само публикациите, които са видими за текущия потребител:
-        // основен автор ИЛИ съавтор.
-        $posts = $postRepository->createQueryBuilder('p')
-            ->leftJoin('p.coAuthors', 'ca')
-            ->andWhere('p.author = :u OR ca = :u')
-            ->setParameter('u', $user)
-            ->orderBy('p.createdAt', 'DESC')
-            ->distinct()
+        $posts = $postRepository
+            ->createVisibleToUserQueryBuilder($user)
             ->getQuery()
             ->getResult();
 
@@ -54,12 +48,19 @@ class PostController extends AbstractController
         $post = new Post();
         $post->setAuthor($user);
 
-        $form = $this->createForm(PostType::class, $post);
+        $form = $this->createForm(PostType::class, $post, [
+            'can_manage_coauthors' => true,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Не допускаме основният автор да е добавен и като съавтор
-            $this->preventSelfCoAuthor($post, $user);
+            $now = new \DateTimeImmutable();
+            if ($post->getCreatedAt() === null) {
+                $post->setCreatedAt($now);
+            }
+            $post->setUpdatedAt($now);
+
+            $this->ensureAuthorNotInCoAuthors($post);
 
             $entityManager->persist($post);
             $entityManager->flush();
@@ -97,18 +98,29 @@ class PostController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $form = $this->createForm(PostType::class, $post);
+        $isAuthor = $post->getAuthor()?->getId() === $user->getId();
+
+        $form = $this->createForm(PostType::class, $post, [
+            'can_manage_coauthors' => $isAuthor,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Не допускаме основният автор да е добавен и като съавтор
-            $this->preventSelfCoAuthor($post, $user);
+            $post->setUpdatedAt(new \DateTimeImmutable());
+
+            // Основният автор не трябва да фигурира като съавтор
+            $this->ensureAuthorNotInCoAuthors($post);
+
+            // Ако редактира съавтор (не основният автор), гарантираме, че остава съавтор
+            if (!$isAuthor) {
+                $this->ensureUserIsCoAuthor($post, $user);
+            }
 
             $entityManager->flush();
 
             $this->addFlash('success', 'Промените са запазени.');
 
-            return $this->redirectToRoute('app_my_posts', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_post_show', ['id' => $post->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('post/edit.html.twig', [
@@ -136,13 +148,29 @@ class PostController extends AbstractController
         return $this->redirectToRoute('app_my_posts', [], Response::HTTP_SEE_OTHER);
     }
 
-    private function preventSelfCoAuthor(Post $post, User $user): void
+    private function ensureAuthorNotInCoAuthors(Post $post): void
     {
+        $author = $post->getAuthor();
+        if ($author === null) {
+            return;
+        }
+
         foreach ($post->getCoAuthors() as $coAuthor) {
-            if ($coAuthor->getId() !== null && $coAuthor->getId() === $user->getId()) {
+            if ($coAuthor->getId() !== null && $coAuthor->getId() === $author->getId()) {
                 $post->removeCoAuthor($coAuthor);
                 break;
             }
+        }
+    }
+
+    private function ensureUserIsCoAuthor(Post $post, User $user): void
+    {
+        $exists = $post->getCoAuthors()->exists(
+            fn (int $key, User $u) => $u->getId() === $user->getId()
+        );
+
+        if (!$exists) {
+            $post->addCoAuthor($user);
         }
     }
 }
