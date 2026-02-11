@@ -23,6 +23,10 @@ class Post
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
 
+    // ВАЖНО: НЕ "references" (запазена дума). Ползваме безопасно име.
+    #[ORM\Column(type: Types::TEXT, nullable: true, name: 'reference_list')]
+    private ?string $referenceList = null;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -55,7 +59,6 @@ class Post
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
         return $this;
     }
 
@@ -67,7 +70,17 @@ class Post
     public function setContent(string $content): static
     {
         $this->content = $content;
+        return $this;
+    }
 
+    public function getReferenceList(): ?string
+    {
+        return $this->referenceList;
+    }
+
+    public function setReferenceList(?string $referenceList): static
+    {
+        $this->referenceList = $referenceList;
         return $this;
     }
 
@@ -79,7 +92,6 @@ class Post
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -91,7 +103,6 @@ class Post
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
-
         return $this;
     }
 
@@ -103,7 +114,6 @@ class Post
     public function setAuthor(User $author): static
     {
         $this->author = $author;
-
         return $this;
     }
 
@@ -120,14 +130,12 @@ class Post
         if (!$this->coAuthors->contains($user)) {
             $this->coAuthors->add($user);
         }
-
         return $this;
     }
 
     public function removeCoAuthor(User $user): static
     {
         $this->coAuthors->removeElement($user);
-
         return $this;
     }
 
@@ -135,11 +143,9 @@ class Post
     public function onPrePersist(): void
     {
         $now = new \DateTimeImmutable();
-
         if ($this->createdAt === null) {
             $this->createdAt = $now;
         }
-
         $this->updatedAt = $now;
     }
 

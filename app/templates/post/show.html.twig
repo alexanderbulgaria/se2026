@@ -41,6 +41,23 @@
                     <td>{{ post.createdAt ? post.createdAt|date('d.m.Y H:i') : '—' }}</td>
                 </tr>
 
+				<tr>
+					<th>Референции</th>
+					<td>
+						{% set refs = post.referenceList ? post.referenceList|split("\n") : [] %}
+						{% set refs = refs|map(r => r|trim)|filter(r => r != '') %}
+						{% if refs|length > 0 %}
+							<ol>
+								{% for r in refs %}
+									<li>{{ r }}</li>
+								{% endfor %}
+							</ol>
+						{% else %}
+							—
+						{% endif %}
+					</td>
+				</tr>
+
                 <tr>
                     <th>Обновена</th>
                     <td>{{ post.updatedAt ? post.updatedAt|date('d.m.Y H:i') : '—' }}</td>

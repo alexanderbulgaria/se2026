@@ -21,6 +21,12 @@
         <small>За избор на повече от един съавтор задръж <strong>Ctrl</strong> (или <strong>Cmd</strong> на Mac) и щракни върху имената.</small>
     </div>
 
+	<div class="row">
+		{{ form_label(form.referenceList) }}
+		{{ form_widget(form.referenceList) }}
+		{{ form_errors(form.referenceList) }}
+	</div>
+
     <button type="submit">{{ button_label|default('Запазване') }}</button>
 
 {{ form_end(form) }}

@@ -22,15 +22,21 @@ class PostType extends AbstractType
                 'label' => 'Съдържание',
                 'attr' => ['rows' => 8],
             ])
+            ->add('referenceList', TextareaType::class, [
+                'label' => 'Референции',
+                'required' => false,
+                'attr' => ['rows' => 6],
+                'help' => 'По една референция на ред.',
+            ])
             ->add('coAuthors', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'email',
                 'multiple' => true,
-                'expanded' => true,        
+                'expanded' => true,
                 'required' => false,
-                'by_reference' => false,   
+                'by_reference' => false,
                 'label' => 'Съавтори',
-                'disabled' => !$options['can_manage_coauthors'], 
+                'disabled' => !$options['can_manage_coauthors'],
             ]);
     }
 
